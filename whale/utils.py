@@ -2,9 +2,6 @@ from io import BytesIO
 from pydub import AudioSegment
 
 
-def telegram_bytes_to_wav(source: str | bytes | BytesIO) -> BytesIO:
+def ogg_to_wav(source: str | BytesIO, out: str | BytesIO) -> BytesIO | str:
     segment = AudioSegment.from_ogg(source)
-    return segment.export(
-        BytesIO(),
-        format="wav"
-    )
+    return segment.export(out, format="wav")
