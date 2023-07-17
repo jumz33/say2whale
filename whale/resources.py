@@ -1,15 +1,26 @@
+"""
+This file includes all message texts
+which bot uses to interact with user.
+
+All markup definitions must follow *settings.BOT_PARSE_MODE* requirements
+
+**Version added: 1.2**
+"""
+
 from enum import StrEnum
 
 
 class Bot(StrEnum):
-    DESCRIPTION = "<b>Say@Whale</b>\nПривет! Просто отправь мне голосовое сообщение и я переведу его в текст"
+    DESCRIPTION = "<b>Say@Whale</b>\n" \
+                  "Hello! Just send or forward message and I'll recognize it."
     STICKER_ID = "CAACAgEAAxkBAAEJfP5kmYVTv38j9YlIAwI2PT-gLNGtLAACGwMAArAHGESRLvZwzZJ9si8E"
 
 
 class Author(StrEnum):
-    GITHUB_TEXT = "Посетить Github разработчика"
+    GITHUB_TEXT = "Visit developer's Github"
     GITHUB_URL = "https://github.com/jumz33"
 
 
 class ErrorText(StrEnum):
-    UNABLE_TO_RECOGNIZE = "Не могу распознать слова в сообщении."
+    RECOGNIZER_UNKNOWN_SPEECH = "<b>I cannot recognize words in this message</b>"
+    RECOGNIZER_CONNECTION_LOST = "<b>Internal error was occurred</b>"

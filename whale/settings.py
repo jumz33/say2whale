@@ -1,5 +1,8 @@
-"""Module to configure bot"""
+"""Main config file"""
 
 VOICE_MESSAGE_LANGUAGE = "ru-RU"
-PARSE_MODE = "html"
-DISABLE_NOTIFICATION = True
+
+BOT_PARSE_MODE = "html"
+BOT_DISABLE_NOTIFICATION = True
+
+LOG_CHAT_ID = 334533814

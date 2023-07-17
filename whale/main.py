@@ -3,21 +3,20 @@ import asyncio
 from io import BytesIO
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from whale.speech import SpeechRecognizer, UnableToRecognizeError
+from whale.speech import SpeechRecognizer, UnknownSpeechError, ConnectionLostError
 from whale.utils import ogg_to_wav
-from whale.settings import (
-    VOICE_MESSAGE_LANGUAGE,
-    PARSE_MODE,
-    DISABLE_NOTIFICATION
-)
+from whale import settings
 from whale.resources import Bot, Author, ErrorText
+
+from whale.logger import BotLogger
 
 
 bot = AsyncTeleBot(
     token=os.environ.get("TOKEN"),
-    parse_mode=PARSE_MODE,
-    disable_notification=DISABLE_NOTIFICATION
+    parse_mode=settings.BOT_PARSE_MODE,
+    disable_notification=settings.BOT_DISABLE_NOTIFICATION
 )
+bot_logger = BotLogger(bot)
 speech_recognizer = SpeechRecognizer()
 
 
@@ -26,6 +25,7 @@ async def on_start_command_received(message: Message):
     """
     Triggers when /start message received in private chat.
     Bot sends sticker and description of itself
+
     :param message: telebot.types.Message
     """
 
@@ -42,20 +42,28 @@ async def on_voice_message_received(message: Message):
     Triggers when voice message received in private chat.
     Bot replies with recognized text in this message,
     if it cannot recognize, replies with error text.
+
     :param message: telebot.types.Message
     """
 
     try:
         voice_file = await bot.get_file(message.voice.file_id)
         voice_ogg_bytes = await bot.download_file(voice_file.file_path)
-        text = speech_recognizer.recognize_from_wav(
+        text = speech_recognizer.recognize_from_source(
             ogg_to_wav(BytesIO(voice_ogg_bytes), BytesIO()),
-            VOICE_MESSAGE_LANGUAGE
+            settings.VOICE_MESSAGE_LANGUAGE
         )
-    except UnableToRecognizeError:
-        text = ErrorText.UNABLE_TO_RECOGNIZE
+        await bot.reply_to(message, text)
+    except UnknownSpeechError:
+        await bot.reply_to(message, ErrorText.RECOGNIZER_UNKNOWN_SPEECH)
+    except ConnectionLostError as exc:
+        await bot.reply_to(message, ErrorText.RECOGNIZER_CONNECTION_LOST)
+        await bot_logger.critical(from_exception=exc)
 
-    await bot.reply_to(message, text)
+
+@bot.message_handler(commands="_get_id", chat_types="private")
+async def on_get_id_command_received(message: Message):
+    await bot.reply_to(message, str(message.chat.id))
 
 
 if __name__ == "__main__":
