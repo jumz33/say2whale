@@ -2,9 +2,7 @@
 This file includes all message texts
 which bot uses to interact with user.
 
-All markup definitions must follow *settings.BOT_PARSE_MODE* requirements
-
-**Version added: 1.2**
+All markup definitions must follow bot parse_mode requirements
 """
 
 from enum import StrEnum

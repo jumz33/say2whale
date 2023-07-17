@@ -7,8 +7,7 @@ from whale.speech import SpeechRecognizer, UnknownSpeechError, ConnectionLostErr
 from whale.utils import ogg_to_wav
 from whale import settings
 from whale.resources import Bot, Author, ErrorText
-
-from whale.logger import BotLogger
+from whale.logger import Logger
 
 
 bot = AsyncTeleBot(
@@ -16,7 +15,7 @@ bot = AsyncTeleBot(
     parse_mode=settings.BOT_PARSE_MODE,
     disable_notification=settings.BOT_DISABLE_NOTIFICATION
 )
-bot_logger = BotLogger(bot)
+logger = Logger(bot, settings.LOG_CHAT_ID)
 speech_recognizer = SpeechRecognizer()
 
 
@@ -26,7 +25,7 @@ async def on_start_command_received(message: Message):
     Triggers when /start message received in private chat.
     Bot sends sticker and description of itself
 
-    :param message: telebot.types.Message
+    :param message: Telegram's chat message
     """
 
     markup = InlineKeyboardMarkup()
@@ -43,7 +42,7 @@ async def on_voice_message_received(message: Message):
     Bot replies with recognized text in this message,
     if it cannot recognize, replies with error text.
 
-    :param message: telebot.types.Message
+    :param message: Telegram's chat message
     """
 
     try:
@@ -58,12 +57,7 @@ async def on_voice_message_received(message: Message):
         await bot.reply_to(message, ErrorText.RECOGNIZER_UNKNOWN_SPEECH)
     except ConnectionLostError as exc:
         await bot.reply_to(message, ErrorText.RECOGNIZER_CONNECTION_LOST)
-        await bot_logger.critical(from_exception=exc)
-
-
-@bot.message_handler(commands="_get_id", chat_types="private")
-async def on_get_id_command_received(message: Message):
-    await bot.reply_to(message, str(message.chat.id))
+        await logger.critical(from_exception=exc)
 
 
 if __name__ == "__main__":

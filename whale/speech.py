@@ -20,11 +20,20 @@ class SpeechRecognizer:
         """
         Recognizes speech from given source.
 
-        :param source: WAV/AIFF/AIFF-C/FLAC file path, also can be io.BytesIO
+        :param source: WAV/AIFF/AIFF-C/FLAC file path, also can be :class:`io.BytesIO`
         :param language: RFC5646 language tag (like en-US or fr-FR)
         :return: recognized speech from source
         :raises UnknownSpeechError: if source is unrecognizable
         :raises ConnectionLostError: if API or Internet connection lost
+
+        .. note::
+
+            WAV files must be in PCM/LPCM format.
+            WAVE_FORMAT_EXTENSIBLE and compressed WAV are not supported
+            and may result in undefined behaviour.
+
+            FLAC files must be in native FLAC format.
+            OGG-FLAC is not supported and may result in undefined behaviour.
         """
 
         audio_data = self._record_audio_data_from_source(source)
