@@ -8,4 +8,4 @@ Developed by Zakhar Andreev (https://github.com/jumz33)
 No license. Free use.
 """
 
-VERSION = "1.3"
+VERSION = "1.3.2"

@@ -21,13 +21,12 @@ class SpeechRecognizer:
         Recognizes speech from given source.
 
         :param source: WAV/AIFF/AIFF-C/FLAC file path, also can be :class:`io.BytesIO`
-        :param language: RFC5646 language tag (like en-US or fr-FR)
-        :return: recognized speech from source
+        :param language: RFC5646 string language tag (like 'en-US' or 'fr-FR')
+        :return: recognized string speech from source
         :raises UnknownSpeechError: if source is unrecognizable
         :raises ConnectionLostError: if API or Internet connection lost
 
         .. note::
-
             WAV files must be in PCM/LPCM format.
             WAVE_FORMAT_EXTENSIBLE and compressed WAV are not supported
             and may result in undefined behaviour.

@@ -1,5 +1,5 @@
 from whale.speech import SpeechRecognizer
-from whale.utils import ogg_to_wav
+from whale.speech.utils import ogg_to_wav
 from io import BytesIO
 
 SOURCE_WAV_1_EN = "./data/enUS_speech1.wav"
