@@ -1,4 +1,4 @@
-from whale.speech import SpeechRecognizer
+from whale.speech.recognizer import SpeechRecognizer
 from whale.speech.utils import ogg_to_wav
 from io import BytesIO
 
