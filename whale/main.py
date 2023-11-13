@@ -2,18 +2,17 @@ import os
 import asyncio
 from io import BytesIO
 from telebot.async_telebot import AsyncTeleBot
-from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from whale.speech.recognizer import SpeechRecognizer, UnknownSpeechError, ConnectionLostError
+from telebot.types import Message
+from telebot.types import InlineKeyboardMarkup
+from telebot.types import InlineKeyboardButton
+from whale.speech.recognizer import SpeechRecognizer
+from whale.speech.recognizer import UndefinedSpeechError
 from whale.speech.utils import ogg_to_wav
-from whale import settings
-from whale.resources import Bot, Author, ErrorText
+from whale.res import String
 
+VOICE_MESSAGE_LANGUAGE = "en-US"
 
-bot = AsyncTeleBot(
-    token=os.getenv("TOKEN"),
-    parse_mode=settings.BOT_PARSE_MODE,
-    disable_notification=settings.BOT_DISABLE_NOTIFICATION
-)
+bot = AsyncTeleBot(token=os.getenv("TOKEN"), parse_mode="html")
 recognizer = SpeechRecognizer()
 
 
@@ -22,14 +21,11 @@ async def on_start_command_received(message: Message):
     """
     Triggers when /start message received in private chat.
     Bot sends description of itself
-
     :param message: Telegram's chat message
     """
-
     markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton(Author.GITHUB_TEXT, Author.GITHUB_URL))
-
-    await bot.send_message(message.chat.id, Bot.DESCRIPTION, reply_markup=markup)
+    markup.add(InlineKeyboardButton(String.AUTHOR_GITHUB_TEXT, String.AUTHOR_GITHUB_URL))
+    await bot.send_message(message.chat.id, String.BOT_DESCRIPTION, reply_markup=markup)
 
 
 @bot.message_handler(content_types="voice", chat_types="private")
@@ -38,20 +34,18 @@ async def on_voice_message_received(message: Message):
     Triggers when voice message received in private chat.
     Bot replies with recognized text in this message,
     if it cannot recognize, replies with error text.
-
     :param message: Telegram's chat message
     """
-
     try:
         voice_file = await bot.get_file(message.voice.file_id)
-        voice_ogg_bytes = await bot.download_file(voice_file.file_path)
+        voice_ogg_bytes = BytesIO(await bot.download_file(voice_file.file_path))
         text = recognizer.recognize_from_source(
-            ogg_to_wav(BytesIO(voice_ogg_bytes), BytesIO()),
-            settings.VOICE_MESSAGE_LANGUAGE
+            ogg_to_wav(voice_ogg_bytes),
+            VOICE_MESSAGE_LANGUAGE
         )
         await bot.reply_to(message, text)
-    except UnknownSpeechError:
-        await bot.reply_to(message, ErrorText.RECOGNIZER_UNKNOWN_SPEECH)
+    except UndefinedSpeechError:
+        await bot.reply_to(message, String.RECOGNIZER_ERROR)
 
 
 if __name__ == "__main__":

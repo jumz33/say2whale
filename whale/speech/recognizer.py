@@ -50,7 +50,7 @@ class SpeechRecognizer:
                 language=language
             )
         except UnknownValueError as exc:
-            raise UnknownSpeechError from exc
+            raise UndefinedSpeechError from exc
         except RequestError as exc:
             raise ConnectionLostError from exc
 
@@ -59,7 +59,7 @@ class SpeechRecognizerException(Exception):
     pass
 
 
-class UnknownSpeechError(SpeechRecognizerException):
+class UndefinedSpeechError(SpeechRecognizerException):
     pass
 
 

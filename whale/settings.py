@@ -1,6 +1,0 @@
-"""Main config file"""
-
-VOICE_MESSAGE_LANGUAGE = "ru-RU"
-
-BOT_PARSE_MODE = "html"
-BOT_DISABLE_NOTIFICATION = True
